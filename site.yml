@@ -3,27 +3,37 @@
 - hosts: all
   become: true
   pre_tasks:
-  - name: install updates
+  - name: update repo cache
     apt:
-      upgrade: dist
       update_cache: yes
+    changed_when: false
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: add ssh key for simone
+   # tags: always
+    authorized_key:
+      user: simone
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDCADhzWsij3gapJCfeJOWTkbDHYgJNKg3JNBlwyCkWR ansible"
 
 - hosts: workstations
   become: true
   tasks:
 
-   - name: installing unzip
-     package:
-       name: unzip
+  - name: installing unzip
+    package:
+      name: unzip
 
-   - name: install terraform
-     unarchive:
-       src: https://releases.hashicorp.com/terraform/1.10.1/terraform_1.10.1_linux_amd64.zip
-       dest: /usr/local/bin
-       remote_src: yes
-       mode: 0755
-       owner: root
-       group: root
+  - name: install terraform
+    unarchive:
+      src: https://releases.hashicorp.com/terraform/1.10.1/terraform_1.10.1_linux_amd64.zip
+      dest: /usr/local/bin
+      remote_src: yes
+      mode: 0755
+      owner: root
+      group: root
 
 
 - hosts: web_servers
