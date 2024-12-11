@@ -1,0 +1,75 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+  - name: update repo cache
+    apt:
+      update_cache: yes
+    changed_when: false
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: add ssh key for simone
+   # tags: always
+    authorized_key:
+      user: simone
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDCADhzWsij3gapJCfeJOWTkbDHYgJNKg3JNBlwyCkWR ansible"
+
+- hosts: workstations
+  become: true
+  tasks:
+
+  - name: installing unzip
+    package:
+      name: unzip
+
+  - name: install terraform
+    unarchive:
+      src: https://releases.hashicorp.com/terraform/1.10.1/terraform_1.10.1_linux_amd64.zip
+      dest: /usr/local/bin
+      remote_src: yes
+      mode: 0755
+      owner: root
+      group: root
+
+
+- hosts: web_servers
+  become: true
+  tasks:
+
+  - name: install apache2 and php package
+    package: # we can write apk for ubuntu or dnf for centos, package is generic and refers to all
+      name:
+        - apache2
+        - libapache2-mod-php
+      state: latest
+
+  - name: copy default html file for site
+    copy:
+      src: default_site.html
+      dest: /var/www/html/index.html
+      owner: root
+      group: root
+      mode: 0644
+
+- hosts: db_servers
+  become: true
+  tasks:
+
+
+  - name: install mariadb package
+    package:
+     name: mariadb-server
+     state: latest
+
+- hosts: file_servers
+  become: true
+  tasks:
+
+  - name: install samba package
+    package:
+      name: samba
+      state: latest

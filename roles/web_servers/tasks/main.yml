@@ -1,0 +1,14 @@
+- name: install apache2 and php package
+  package: # we can write apk for ubuntu or dnf for centos, package is generic and refers to all
+    name:
+      - apache2
+      - libapache2-mod-php
+    state: latest
+
+- name: copy default html file for site
+  copy:
+    src: default_site.html
+    dest: /var/www/html/index.html
+    owner: root
+    group: root
+    mode: 0644
